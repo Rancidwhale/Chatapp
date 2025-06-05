@@ -14,5 +14,24 @@ pipeline{
                 sh 'mvn validate'
             }
         }
+        stage('compile') {
+            steps{
+                sh 'mvn compile'
+            }
+        }
+        stage('trivy scan') {
+            steps{
+                sh 'trivy fs .'
+            }
+        }
+        stage('sonarqube') {
+            steps{
+                withSonarQubeEnv('sqube-server') {
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Chatapp \
+                     -Dsonar.java.binaries=. \
+                     -Dsonar.projectKey=Chatapp'''
+                }
+            }
+        }
     }
 }
