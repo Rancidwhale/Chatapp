@@ -54,11 +54,6 @@ pipeline{
             sh 'mvn package -DskipTest'
             }
         }
-        stage('Cleanup'){
-            steps{
-                sh 'cd $TOMCAT_PATH/ && rm -rf ROOT.war'
-            }
-        }
         stage('run app'){
             steps{
                 sh 'mv target/*.war $TOMCAT_PATH/ROOT.war'
