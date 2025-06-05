@@ -56,7 +56,7 @@ pipeline{
         }
         stage('Cleanup'){
             steps{
-                sh 'rm -rf $TOMCAT_PATH/ROOT.war'
+                sh 'cd $TOMCAT_PATH/ && rm -rf ROOT.war'
             }
         }
         stage('run app'){
