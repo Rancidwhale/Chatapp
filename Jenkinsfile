@@ -3,6 +3,9 @@ pipeline{
     tools {
         maven "mvn"
     }
+    environment {
+        SCANNER_HOME=tool 'sqube-scanner'
+    }
     stages {
         stage('git scm') {
             steps {
@@ -21,7 +24,7 @@ pipeline{
         }
         stage('trivy scan') {
             steps{
-                sh 'trivy fs -o file-scan.html .'
+                sh 'trivy fs --severity LOW,MEDIUM,HIGH,CRITICAL -o file-scan.html .'
             }
         }
         stage('sonarqube') {
