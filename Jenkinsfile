@@ -28,21 +28,25 @@ pipeline{
                 sh 'trivy fs --severity LOW,MEDIUM,HIGH,CRITICAL -o file-scan.html .'
             }
         }
-        stage('sonarqube') {
-            steps{
-                withSonarQubeEnv('sqube-server') {
-                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Chatapp \
-                     -Dsonar.java.binaries=. \
-                     -Dsonar.projectKey=Chatapp'''
+        stage ('Dependency Checks'){
+            parallel{
+                stage('sonarqube') {
+                    steps{
+                        withSonarQubeEnv('sqube-server') {
+                            sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Chatapp \
+                             -Dsonar.java.binaries=. \
+                             -Dsonar.projectKey=Chatapp'''
+                        }
+                    }
                 }
-            }
-        }
-        stage('OWASP FS SCAN') {
-            steps {
-                withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
-                    dependencyCheck additionalArguments: "--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey ${NVD_API_KEY}", odcInstallation: 'owasp'
+                stage('OWASP FS SCAN') {
+                    steps {
+                        withCredentials([string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')]) {
+                            dependencyCheck additionalArguments: "--scan ./ --disableYarnAudit --disableNodeAudit --nvdApiKey ${NVD_API_KEY}", odcInstallation: 'owasp'
+                        }
+                        dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                    }
                 }
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
         stage('Build'){
