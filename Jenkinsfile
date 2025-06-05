@@ -5,6 +5,7 @@ pipeline{
     }
     environment {
         SCANNER_HOME=tool 'sqube-scanner'
+        TOMCAT_PATH = '/home/ec2-user/tomcat/webapps'
     }
     stages {
         stage('git scm') {
@@ -46,7 +47,17 @@ pipeline{
         }
         stage('Build'){
         steps{
-            sh 'mvn package'
+            sh 'mvn package -DskipTest'
+            }
+        }
+        stage('Cleanup'){
+            steps{
+                sh 'rm -rf $TOMCAT_PATH/ROOT.war'
+            }
+        }
+        stage('run app'){
+            steps{
+                sh 'mv target/*.war $TOMCAT_PATH/ROOT.war'
             }
         }
         
