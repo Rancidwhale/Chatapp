@@ -21,7 +21,7 @@ pipeline{
         }
         stage('trivy scan') {
             steps{
-                sh 'trivy fs .'
+                sh 'trivy fs --severity CRITICAL -o file-scan.html .'
             }
         }
         stage('sonarqube') {
