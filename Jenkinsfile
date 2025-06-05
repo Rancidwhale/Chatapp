@@ -52,12 +52,12 @@ pipeline{
         }
         stage('Cleanup'){
             steps{
-                sh 'sudo rm -rf $TOMCAT_PATH/ROOT.war'
+                sh 'rm -rf $TOMCAT_PATH/ROOT.war'
             }
         }
         stage('run app'){
             steps{
-                sh 'sudo mv target/*.war $TOMCAT_PATH/ROOT.war'
+                sh 'mv target/*.war $TOMCAT_PATH/ROOT.war'
             }
         }
         
